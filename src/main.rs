@@ -2,14 +2,22 @@ use std::fs::File;
 use std::io::{Read, Write};
 use std::path::Path;
 
-const MIN_BRIGHTNESS: usize = 1000;
-
 fn main() {
-    if current_brightness() < max_brightness() {
-        set_brightness(max_brightness());
-    } else {
-        set_brightness(MIN_BRIGHTNESS);
+    // Find and set a brightness greater than the current and quit.
+    for interval in &intervals() {
+        if *interval > current_brightness() {
+            return set_brightness(interval);
+        }
     }
+
+    // We're already at max brightness; circle back to the minimum.
+    set_brightness(&intervals()[0]);
+}
+
+fn intervals() -> [usize; 4] {
+    let max = max_brightness();
+
+    [max/25, max/10, max/4, max]
 }
 
 fn current_brightness() -> usize {
@@ -34,7 +42,7 @@ fn max_brightness() -> usize {
     )
 }
 
-fn set_brightness(brightness: usize) {
+fn set_brightness(brightness: &usize) {
     let mut device_brightness = File::create(
       Path::new("/sys/class/backlight/intel_backlight/brightness")
     ).unwrap();
