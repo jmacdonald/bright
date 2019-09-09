@@ -17,7 +17,7 @@ fn main() {
 fn intervals() -> [usize; 4] {
     let max = max_brightness();
 
-    [max/25, max/10, max/4, max]
+    [max/1000, max/10, max/4, max]
 }
 
 fn current_brightness() -> usize {
